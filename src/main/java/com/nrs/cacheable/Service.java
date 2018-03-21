@@ -11,10 +11,10 @@ package com.nrs.cacheable;
  */
 public class Service implements Iservice{
     
-    
+     @Cacheable(key = "#getValue")
     @Override
     public String getValue(String val) {
-        return "value";
+       return "value";
     }
     
 }

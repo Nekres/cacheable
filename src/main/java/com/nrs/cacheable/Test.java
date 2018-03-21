@@ -11,7 +11,7 @@ import com.nrs.cacheable.exceptions.NonCacheableException;
  *
  * @author root
  */
-public class Main {
+public class Test {
     
     public static void main(String[] args) throws NonCacheableException {
         CacheManager<Iservice> manager = new CacheManager<>(new Service());

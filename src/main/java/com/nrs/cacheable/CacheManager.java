@@ -69,13 +69,14 @@ public class CacheManager<T> implements InvocationHandler{
                 System.out.println(method.getAnnotation(Cacheable.class).key());
             }
         }
+        
         if(cacheable.isEmpty()){
-            throw new NonCacheableClassException("At least one class method must be selected as Cacheable");
+            throw new NonCacheableClassException("At least one class method must be annotated as Cacheable");
         }
         return (T)Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
     }
     /**
-     * Used to get
+     * Used to compare
      * @return 
      */
     private final List<Method> getCommonMethods(Class clazz) {

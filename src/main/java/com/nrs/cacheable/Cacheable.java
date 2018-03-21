@@ -16,9 +16,7 @@ import java.lang.annotation.Target;
  * @author root
  */
 @Target(ElementType.METHOD)
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
-
 public @interface Cacheable {
     
     String key();
