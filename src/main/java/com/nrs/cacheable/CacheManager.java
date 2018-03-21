@@ -20,64 +20,72 @@ import java.util.List;
 
 /**
  * Using proxy to intercept method calls.
+ *
  * @author root
  */
-public class CacheManager<T> implements InvocationHandler{
-    
+public class CacheManager<T> implements InvocationHandler {
+
     private final T target;
-    private final HashMap<String,Method> cacheable = new HashMap<>();
+    private final HashMap<String, Method> cacheable = new HashMap<>();
 
     public CacheManager(T target) {
         this.target = target;
     }
-    
-    
-    
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String key = null;
+        if(cacheable.values().contains(method)){
+            System.out.println("contains this");
+        }
         Cacheable annotation = method.getAnnotation(Cacheable.class);
-        if(annotation != null){
+        if (annotation != null) {
             key = annotation.key();
         }
-        if(cacheable.keySet().contains(key)){
+        System.out.println("Incoming key:" + key);
+        System.out.println(cacheable.keySet().contains(key));
+        if (cacheable.keySet().contains(key)) {
             System.out.println("contains");
-            return method.invoke(target,args);
-        }else{
-            System.out.println(cacheable.get(0).getName());
-            System.out.println("not contains");
+            return method.invoke(target, args);
+        } else {
+            method.invoke(target, args);
         }
         return null;
     }
+
     /**
      * Method allows to register your object as cacheable.
+     *
      * @return proxy-object
-     * @throws NonCacheableException 
+     * @throws NonCacheableException
      */
-    public T register() throws NonCacheableException{
+    public T register() throws NonCacheableException {
         Class clazz = target.getClass();
         List<Method> common = this.getCommonMethods(clazz);
-        
-        for(Method method : common){
-         
-            if(method.getAnnotation(Cacheable.class) != null){
-                if(method.getReturnType().equals(Void.TYPE)){
-                    throw new NonCacheableMethodException("Method return type must be non-void");
-                }
-                
+        //common methods with real type
+        for (Method method : common) {
+            if (checkOnAnnotation(method)) {
                 cacheable.put(method.getAnnotation(Cacheable.class).key(), method);
-                System.out.println(method.getAnnotation(Cacheable.class).key());
             }
         }
-        
-        if(cacheable.isEmpty()){
+
+        for (Method m : clazz.getMethods()) {
+            if (checkOnAnnotation(m)) {
+                cacheable.put(m.getAnnotation(Cacheable.class).key(), m);
+                System.out.println("put " + m.getAnnotation(Cacheable.class).key());
+            }
+        }
+
+        if (cacheable.isEmpty()) {
             throw new NonCacheableClassException("At least one class method must be annotated as Cacheable");
         }
-        return (T)Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), clazz.getInterfaces(), this);
     }
+
     /**
      * Used to compare
-     * @return 
+     *
+     * @return
      */
     private final List<Method> getCommonMethods(Class clazz) {
         List<Method> common = new ArrayList<>();
@@ -92,6 +100,16 @@ public class CacheManager<T> implements InvocationHandler{
 
         }
         return common;
+    }
+
+    private final boolean checkOnAnnotation(final Method method) throws NonCacheableMethodException {
+        if (method.getAnnotation(Cacheable.class) != null) {
+            if (method.getReturnType().equals(Void.TYPE)) {
+                throw new NonCacheableMethodException("Method return type must be non-void");
+            }
+            return true;
+        }else
+        return false;
     }
 
 }
