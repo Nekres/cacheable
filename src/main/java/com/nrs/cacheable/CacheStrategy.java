@@ -9,8 +9,9 @@ package com.nrs.cacheable;
  *
  * @author root
  */
-public interface CacheStrategy<T> {
+public interface CacheStrategy {
     
-     public T getValue();
+     public Object getValue(final String methodName, Object... args);
+     public void putValue(final String key, final Object value);
     
 }

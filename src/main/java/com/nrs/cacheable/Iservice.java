@@ -13,6 +13,7 @@ package com.nrs.cacheable;
 
 public interface Iservice {
     
-   @Cacheable(key = "#getValue") 
+       
     public String getValue(String val);
+    public boolean simulateLongExecution();
 }

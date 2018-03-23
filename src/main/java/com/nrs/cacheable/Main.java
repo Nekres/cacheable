@@ -8,15 +8,15 @@ package com.nrs.cacheable;
 import com.nrs.cacheable.exceptions.NonCacheableException;
 
 /**
- *
+ *  
  * @author root
  */
-public class Test {
+public class Main {
     
     public static void main(String[] args) throws NonCacheableException {
-        CacheManager<Iservice> manager = new CacheManager<>(new Service());
+        CacheManager<Iservice> manager = new CacheManager<>(new Service(), new LeastRecentlyUsed(20));
         Iservice t = manager.register();
-        final String value = t.getValue("");
+        final String value = t.getValue("Some string value");
         System.out.println(value);
     }
     
